@@ -6,9 +6,8 @@
     "dev": "next dev --port 8880",
     "build": "next build",
     "start": "next start",
-    "lint": "biome lint ./src && npm run lint:hooks && npm run lint:interface && npm run lint:function",
+    "lint": "biome lint ./src && npm run lint:hooks && npm run lint:function",
     "lint:hooks": "! grep -rE 'useCallback|useMemo' ./src --include='*.tsx' --include='*.ts' || (echo 'Error: useCallback/useMemo are banned. Use React Compiler instead.' && exit 1)",
-    "lint:interface": "! grep -rE '^export interface |^interface ' ./src --include='*.tsx' --include='*.ts' || (echo 'Error: Use type instead of interface.' && exit 1)",
     "lint:function": "! grep -rE '^export function |^export default function |^async function |^function ' ./src --include='*.tsx' --include='*.ts' || (echo 'Error: Use arrow functions instead of function declarations.' && exit 1)",
     "format": "biome format --write ./src",
     "check": "biome check ./src"
@@ -24,7 +23,6 @@
     "@types/node": "^25.0.6",
     "@types/react": "^19.2.8",
     "@types/react-dom": "^19.2.3",
-    "babel-plugin-react-compiler": "^1.0.0",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3"
   }

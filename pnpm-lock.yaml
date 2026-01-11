@@ -33,9 +33,6 @@ importers:
       '@types/react-dom':
         specifier: ^19.2.3
         version: 19.2.3(@types/react@19.2.8)
-      babel-plugin-react-compiler:
-        specifier: ^1.0.0
-        version: 1.0.0
       tailwindcss:
         specifier: ^4.1.18
         version: 4.1.18
@@ -624,14 +621,17 @@ snapshots:
 
   '@alloc/quick-lru@5.2.0': {}
 
-  '@babel/helper-string-parser@7.27.1': {}
+  '@babel/helper-string-parser@7.27.1':
+    optional: true
 
-  '@babel/helper-validator-identifier@7.28.5': {}
+  '@babel/helper-validator-identifier@7.28.5':
+    optional: true
 
   '@babel/types@7.28.5':
     dependencies:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.28.5
+    optional: true
 
   '@biomejs/biome@2.3.11':
     optionalDependencies:
@@ -903,6 +903,7 @@ snapshots:
   babel-plugin-react-compiler@1.0.0:
     dependencies:
       '@babel/types': 7.28.5
+    optional: true
 
   baseline-browser-mapping@2.9.14: {}
 
