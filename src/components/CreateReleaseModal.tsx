@@ -95,15 +95,15 @@ export const CreateReleaseModal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
-        <h2 className="text-xl font-bold mb-4">新規リリース作成</h2>
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-lg max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto shadow-lg">
+        <h2 className="text-lg font-semibold text-gray-800 mb-4">新規リリース作成</h2>
         <div className="mb-4">
-          <p className="text-gray-600">{repository.full_name}</p>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-600">{repository.full_name}</p>
+          <p className="text-xs text-gray-500 mt-1">
             現行バージョン:{' '}
             {repository.latest_release ? (
-              <span className="font-mono text-gray-700">{repository.latest_release.tag_name}</span>
+              <span className="font-mono text-gray-600">{repository.latest_release.tag_name}</span>
             ) : (
               <span className="text-gray-400">なし</span>
             )}
@@ -112,7 +112,7 @@ export const CreateReleaseModal = ({
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="tagName" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="tagName" className="block text-xs font-medium text-gray-600 mb-1">
               タグ名（バージョン）
             </label>
             <input
@@ -120,14 +120,14 @@ export const CreateReleaseModal = ({
               id="tagName"
               value={tagName}
               onChange={(e) => setTagName(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400"
               placeholder="v1.0.0"
               required
             />
           </div>
 
           <div className="mb-4">
-            <label htmlFor="releaseNotes" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="releaseNotes" className="block text-xs font-medium text-gray-600 mb-1">
               リリースノート
               {isLoadingNotes && (
                 <span className="ml-2 text-gray-400 font-normal">読み込み中...</span>
@@ -137,33 +137,33 @@ export const CreateReleaseModal = ({
               id="releaseNotes"
               value={releaseNotes}
               onChange={(e) => setReleaseNotes(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+              className="w-full px-3 py-2 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400 font-mono text-xs leading-relaxed"
               rows={12}
               placeholder="リリースノートが自動生成されます..."
             />
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-xs text-gray-400">
               自動生成されたノートを編集できます（Markdown形式）
             </p>
           </div>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded text-sm">
+            <div className="mb-4 p-3 bg-red-50 text-red-600 rounded text-xs">
               {error}
             </div>
           )}
 
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800 cursor-pointer"
+              className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 cursor-pointer transition-colors"
               disabled={isSubmitting}
             >
               キャンセル
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
+              className="px-4 py-2 text-sm bg-gray-800 text-white rounded hover:bg-gray-700 disabled:opacity-50 cursor-pointer transition-colors"
               disabled={isSubmitting || isLoadingNotes}
             >
               {isSubmitting ? '作成中...' : 'リリース作成'}

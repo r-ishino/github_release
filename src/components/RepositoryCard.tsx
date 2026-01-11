@@ -13,16 +13,16 @@ type RepositoryCardProps = {
 };
 
 const ownerColors = [
-  'bg-purple-100 text-purple-700',
-  'bg-blue-100 text-blue-700',
-  'bg-green-100 text-green-700',
-  'bg-yellow-100 text-yellow-700',
-  'bg-pink-100 text-pink-700',
-  'bg-indigo-100 text-indigo-700',
-  'bg-teal-100 text-teal-700',
-  'bg-orange-100 text-orange-700',
-  'bg-cyan-100 text-cyan-700',
-  'bg-rose-100 text-rose-700',
+  'bg-slate-100 text-slate-600',
+  'bg-zinc-100 text-zinc-600',
+  'bg-stone-100 text-stone-600',
+  'bg-neutral-100 text-neutral-600',
+  'bg-gray-100 text-gray-600',
+  'bg-slate-50 text-slate-500',
+  'bg-zinc-50 text-zinc-500',
+  'bg-stone-50 text-stone-500',
+  'bg-neutral-50 text-neutral-500',
+  'bg-gray-50 text-gray-500',
 ];
 
 const getOwnerColor = (owner: string): string => {
@@ -64,7 +64,7 @@ export const RepositoryCard = ({
             href={repository.html_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-lg font-semibold text-blue-600 hover:underline"
+            className="text-base font-semibold text-gray-800 hover:text-blue-600 hover:underline transition-colors"
           >
             {repository.name}
           </a>
@@ -72,7 +72,7 @@ export const RepositoryCard = ({
         <button
           type="button"
           onClick={() => onToggleFavorite(repository.full_name)}
-          className="text-2xl cursor-pointer hover:scale-110 transition-transform"
+          className={`text-lg cursor-pointer hover:scale-110 transition-transform ${isFavorite ? 'text-amber-400' : 'text-gray-300 hover:text-amber-300'}`}
           title={isFavorite ? 'お気に入りから削除' : 'お気に入りに追加'}
         >
           {isFavorite ? '★' : '☆'}
@@ -86,41 +86,44 @@ export const RepositoryCard = ({
       <div className="flex justify-between items-center">
         <div className="text-sm">
           {isLoadingRelease ? (
-            <span className="text-gray-400">読み込み中...</span>
+            <span className="text-gray-400 text-xs">読み込み中...</span>
           ) : latest_release ? (
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="px-2 py-1 bg-green-100 text-green-800 rounded font-mono">
+              <span className="px-2 py-0.5 bg-gray-100 text-gray-700 rounded font-mono text-xs">
                 {latest_release.tag_name}
               </span>
-              <span className="text-gray-500">
+              <span className="text-gray-400 text-xs">
                 {latest_release.days_since_release === 0
                   ? '今日'
                   : `${latest_release.days_since_release}日前`}
               </span>
-              {isLoadingDiff ? (
-                <span className="text-gray-400 text-xs">差分確認中...</span>
-              ) : diffStatus?.hasChanges ? (
-                <span className="px-2 py-0.5 bg-orange-100 text-orange-700 rounded text-xs">
-                  {diffStatus.commitsAhead}件の新コミット
-                </span>
-              ) : diffStatus ? (
-                <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">
-                  最新
-                </span>
-              ) : null}
             </div>
           ) : (
-            <span className="text-gray-400">リリースなし</span>
+            <span className="text-gray-400 text-xs">リリースなし</span>
           )}
         </div>
 
-        <button
-          type="button"
-          onClick={() => onCreateRelease(repository)}
-          className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors cursor-pointer"
-        >
-          新規リリース
-        </button>
+        <div className="flex items-center gap-2">
+          {latest_release && (
+            isLoadingDiff ? (
+              <span className="text-gray-300 text-xs">確認中...</span>
+            ) : diffStatus?.hasChanges ? (
+              <span className="px-1.5 py-0.5 bg-amber-50 text-amber-600 rounded text-xs">
+                +{diffStatus.commitsAhead}
+              </span>
+            ) : diffStatus ? (
+              <span className="text-gray-400 text-xs">✓</span>
+            ) : null
+          )}
+          <button
+            type="button"
+            onClick={() => onCreateRelease(repository)}
+            disabled={!latest_release || !diffStatus?.hasChanges}
+            className="px-3 py-1.5 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors cursor-pointer disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed"
+          >
+            Release
+          </button>
+        </div>
       </div>
     </div>
   );
