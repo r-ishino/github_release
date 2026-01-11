@@ -69,3 +69,14 @@ export type GeneratedNotes = {
   name: string;
   body: string;
 };
+
+export type GitHubCompareResponse = {
+  status: 'ahead' | 'behind' | 'identical' | 'diverged';
+  ahead_by: number;
+  behind_by: number;
+};
+
+export type DiffStatus = {
+  hasChanges: boolean;
+  commitsAhead: number;
+};
