@@ -191,7 +191,7 @@ const Home = () => {
   if (error) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="p-4 bg-red-100 text-red-700 rounded">{error}</div>
+        <div className="p-4 bg-red-50 text-red-600 rounded text-sm">{error}</div>
       </div>
     );
   }
@@ -199,8 +199,8 @@ const Home = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">リポジトリ一覧</h2>
-        <p className="text-gray-600 mt-1">
+        <h2 className="text-xl font-semibold text-gray-800">リポジトリ一覧</h2>
+        <p className="text-gray-500 text-sm mt-1">
           {repositories.length} 件のリポジトリ
         </p>
       </div>
@@ -226,7 +226,7 @@ const Home = () => {
             type="button"
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
-            className="px-3 py-1 border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer hover:bg-gray-100"
+            className="px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer hover:bg-gray-50 transition-colors"
           >
             前へ
           </button>
@@ -236,10 +236,10 @@ const Home = () => {
                 key={page}
                 type="button"
                 onClick={() => setCurrentPage(page)}
-                className={`px-3 py-1 rounded cursor-pointer ${
+                className={`px-3 py-1.5 text-sm rounded cursor-pointer transition-colors ${
                   currentPage === page
-                    ? 'bg-blue-600 text-white'
-                    : 'border border-gray-300 hover:bg-gray-100'
+                    ? 'bg-gray-800 text-white'
+                    : 'text-gray-600 border border-gray-200 hover:bg-gray-50'
                 }`}
               >
                 {page}
@@ -250,7 +250,7 @@ const Home = () => {
             type="button"
             onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
             disabled={currentPage === totalPages}
-            className="px-3 py-1 border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer hover:bg-gray-100"
+            className="px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer hover:bg-gray-50 transition-colors"
           >
             次へ
           </button>
