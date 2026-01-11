@@ -20,6 +20,7 @@ const Home = () => {
   const [nextVersion, setNextVersion] = useState('v0.0.1');
   const [refreshKey, setRefreshKey] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
   const fetchedPagesRef = useRef<Set<string>>(new Set());
   const fetchedDiffPagesRef = useRef<Set<string>>(new Set());
 
@@ -50,13 +51,25 @@ const Home = () => {
     fetchRepositories();
   }, [refreshKey]);
 
+  const filteredRepositories = searchQuery.trim()
+    ? repositories.filter((repo) => {
+        const query = searchQuery.toLowerCase();
+        return (
+          repo.name.toLowerCase().includes(query) ||
+          repo.owner.toLowerCase().includes(query) ||
+          repo.full_name.toLowerCase().includes(query) ||
+          (repo.description?.toLowerCase().includes(query) ?? false)
+        );
+      })
+    : repositories;
+
   const sortedRepositories = isLoaded
-    ? [...repositories].sort((a, b) => {
+    ? [...filteredRepositories].sort((a, b) => {
         const aFav = isFavorite(a.full_name) ? 1 : 0;
         const bFav = isFavorite(b.full_name) ? 1 : 0;
         return bFav - aFav;
       })
-    : repositories;
+    : filteredRepositories;
 
   const totalPages = Math.ceil(sortedRepositories.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -64,6 +77,11 @@ const Home = () => {
     startIndex,
     startIndex + ITEMS_PER_PAGE
   );
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1);
+  };
 
   // Fetch releases for current page repositories
   useEffect(() => {
@@ -199,15 +217,29 @@ const Home = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="mb-6">
-        <h2 className="text-xl font-semibold text-gray-800">リポジトリ一覧</h2>
-        <p className="text-gray-500 text-sm mt-1">
-          {repositories.length} 件のリポジトリ
+        <div className="flex items-center justify-between gap-4 mb-2">
+          <h2 className="text-xl font-semibold text-gray-800">リポジトリ一覧</h2>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={handleSearchChange}
+            placeholder="検索..."
+            className="px-3 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400 w-64"
+          />
+        </div>
+        <p className="text-gray-500 text-sm">
+          {searchQuery ? `${sortedRepositories.length} / ${repositories.length} 件` : `${repositories.length} 件のリポジトリ`}
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        {paginatedRepositoriesWithRelease.map((repo) => (
-          <RepositoryCard
+      {sortedRepositories.length === 0 ? (
+        <div className="text-center text-gray-400 py-12">
+          {searchQuery ? `「${searchQuery}」に一致するリポジトリはありません` : 'リポジトリがありません'}
+        </div>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2">
+          {paginatedRepositoriesWithRelease.map((repo) => (
+            <RepositoryCard
             key={repo.id}
             repository={repo}
             isFavorite={isFavorite(repo.full_name)}
@@ -216,9 +248,10 @@ const Home = () => {
             isLoadingRelease={releasesLoading && !(repo.full_name in releases)}
             diffStatus={diffStatuses[repo.full_name]}
             isLoadingDiff={diffLoading && !(repo.full_name in diffStatuses)}
-          />
-        ))}
-      </div>
+            />
+          ))}
+        </div>
+      )}
 
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-2 mt-8">
