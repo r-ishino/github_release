@@ -1,8 +1,222 @@
-export default function Home() {
-	return (
-		<main className="min-h-screen p-8">
-			<h1 className="text-3xl font-bold mb-4">GitHub Release Manager</h1>
-			<p className="text-gray-600">リポジトリ一覧がここに表示されます</p>
-		</main>
-	);
-}
+'use client';
+
+import { useEffect, useState, useRef } from 'react';
+import { RepositoryCard } from '@/components/RepositoryCard';
+import { CreateReleaseModal } from '@/components/CreateReleaseModal';
+import { useFavorites } from '@/hooks/useFavorites';
+import type { RepositoryBasic, RepositoryWithRelease, LatestReleaseInfo } from '@/types/github';
+
+const ITEMS_PER_PAGE = 10;
+
+const Home = () => {
+  const [repositories, setRepositories] = useState<RepositoryBasic[]>([]);
+  const [releases, setReleases] = useState<Record<string, LatestReleaseInfo | null>>({});
+  const [loading, setLoading] = useState(true);
+  const [releasesLoading, setReleasesLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedRepo, setSelectedRepo] = useState<RepositoryWithRelease | null>(null);
+  const [nextVersion, setNextVersion] = useState('v0.0.1');
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const fetchedPagesRef = useRef<Set<string>>(new Set());
+
+  const { isFavorite, toggleFavorite, isLoaded } = useFavorites();
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: refreshKey is used to trigger refetch
+  useEffect(() => {
+    const fetchRepositories = async () => {
+      try {
+        setLoading(true);
+        setReleases({});
+        fetchedPagesRef.current = new Set();
+        const response = await fetch('/api/repositories');
+        if (!response.ok) {
+          throw new Error('リポジトリの取得に失敗しました');
+        }
+        const data = await response.json();
+        setRepositories(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'エラーが発生しました');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRepositories();
+  }, [refreshKey]);
+
+  const sortedRepositories = isLoaded
+    ? [...repositories].sort((a, b) => {
+        const aFav = isFavorite(a.full_name) ? 1 : 0;
+        const bFav = isFavorite(b.full_name) ? 1 : 0;
+        return bFav - aFav;
+      })
+    : repositories;
+
+  const totalPages = Math.ceil(sortedRepositories.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedRepositories = sortedRepositories.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE
+  );
+
+  // Fetch releases for current page repositories
+  useEffect(() => {
+    const reposToFetch = paginatedRepositories.filter(
+      (repo) => !(repo.full_name in releases)
+    );
+
+    if (reposToFetch.length === 0) return;
+
+    const cacheKey = reposToFetch.map((r) => r.full_name).join(',');
+    if (fetchedPagesRef.current.has(cacheKey)) return;
+    fetchedPagesRef.current.add(cacheKey);
+
+    const fetchReleases = async () => {
+      setReleasesLoading(true);
+      try {
+        const response = await fetch('/api/releases/batch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            repositories: reposToFetch.map((repo) => ({
+              owner: repo.owner,
+              name: repo.name,
+              full_name: repo.full_name,
+            })),
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setReleases((prev) => ({ ...prev, ...data }));
+        }
+      } catch {
+        // Ignore release fetch errors
+      } finally {
+        setReleasesLoading(false);
+      }
+    };
+
+    fetchReleases();
+  }, [paginatedRepositories, releases]);
+
+  const paginatedRepositoriesWithRelease: RepositoryWithRelease[] = paginatedRepositories.map(
+    (repo) => ({
+      ...repo,
+      latest_release: releases[repo.full_name] ?? null,
+    })
+  );
+
+  const handleCreateRelease = async (repository: RepositoryWithRelease) => {
+    try {
+      const response = await fetch(
+        `/api/repositories/${repository.owner}/${repository.name}/releases`
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setNextVersion(data.next_version);
+      }
+    } catch {
+      // デフォルトのバージョンを使用
+    }
+    setSelectedRepo(repository);
+  };
+
+  const handleModalClose = () => {
+    setSelectedRepo(null);
+  };
+
+  const handleReleaseSuccess = () => {
+    setSelectedRepo(null);
+    setRefreshKey((prev) => prev + 1);
+  };
+
+  if (loading) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="text-center text-gray-600">読み込み中...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="p-4 bg-red-100 text-red-700 rounded">{error}</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-gray-800">リポジトリ一覧</h2>
+        <p className="text-gray-600 mt-1">
+          {repositories.length} 件のリポジトリ
+        </p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        {paginatedRepositoriesWithRelease.map((repo) => (
+          <RepositoryCard
+            key={repo.id}
+            repository={repo}
+            isFavorite={isFavorite(repo.full_name)}
+            onToggleFavorite={toggleFavorite}
+            onCreateRelease={handleCreateRelease}
+            isLoadingRelease={releasesLoading && !(repo.full_name in releases)}
+          />
+        ))}
+      </div>
+
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-2 mt-8">
+          <button
+            type="button"
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className="px-3 py-1 border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer hover:bg-gray-100"
+          >
+            前へ
+          </button>
+          <div className="flex gap-1">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                type="button"
+                onClick={() => setCurrentPage(page)}
+                className={`px-3 py-1 rounded cursor-pointer ${
+                  currentPage === page
+                    ? 'bg-blue-600 text-white'
+                    : 'border border-gray-300 hover:bg-gray-100'
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className="px-3 py-1 border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer hover:bg-gray-100"
+          >
+            次へ
+          </button>
+        </div>
+      )}
+
+      {selectedRepo && (
+        <CreateReleaseModal
+          repository={selectedRepo}
+          nextVersion={nextVersion}
+          onClose={handleModalClose}
+          onSuccess={handleReleaseSuccess}
+        />
+      )}
+    </div>
+  );
+};
+
+export default Home;

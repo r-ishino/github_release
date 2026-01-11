@@ -1,0 +1,112 @@
+'use client';
+
+import type { RepositoryWithRelease } from '@/types/github';
+
+type RepositoryCardProps = {
+  repository: RepositoryWithRelease;
+  isFavorite: boolean;
+  onToggleFavorite: (repoFullName: string) => void;
+  onCreateRelease: (repository: RepositoryWithRelease) => void;
+  isLoadingRelease?: boolean;
+};
+
+const ownerColors = [
+  'bg-purple-100 text-purple-700',
+  'bg-blue-100 text-blue-700',
+  'bg-green-100 text-green-700',
+  'bg-yellow-100 text-yellow-700',
+  'bg-pink-100 text-pink-700',
+  'bg-indigo-100 text-indigo-700',
+  'bg-teal-100 text-teal-700',
+  'bg-orange-100 text-orange-700',
+  'bg-cyan-100 text-cyan-700',
+  'bg-rose-100 text-rose-700',
+];
+
+const getOwnerColor = (owner: string): string => {
+  let hash = 0;
+  for (let i = 0; i < owner.length; i++) {
+    hash = owner.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % ownerColors.length;
+  return ownerColors[index];
+};
+
+export const RepositoryCard = ({
+  repository,
+  isFavorite,
+  onToggleFavorite,
+  onCreateRelease,
+  isLoadingRelease = false,
+}: RepositoryCardProps) => {
+  const { latest_release } = repository;
+  const ownerColorClass = getOwnerColor(repository.owner);
+
+  return (
+    <div className="border border-gray-200 rounded-lg p-4 bg-white">
+      <div className="flex justify-between items-start mb-2">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className={`px-2 py-0.5 text-xs font-medium rounded ${ownerColorClass}`}>
+              {repository.owner}
+            </span>
+            {repository.private && (
+              <span className="px-2 py-0.5 text-xs bg-gray-100 text-gray-600 rounded">
+                Private
+              </span>
+            )}
+          </div>
+          <a
+            href={repository.html_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-lg font-semibold text-blue-600 hover:underline"
+          >
+            {repository.name}
+          </a>
+        </div>
+        <button
+          type="button"
+          onClick={() => onToggleFavorite(repository.full_name)}
+          className="text-2xl cursor-pointer hover:scale-110 transition-transform"
+          title={isFavorite ? 'お気に入りから削除' : 'お気に入りに追加'}
+        >
+          {isFavorite ? '★' : '☆'}
+        </button>
+      </div>
+
+      {repository.description && (
+        <p className="text-gray-600 text-sm mb-3">{repository.description}</p>
+      )}
+
+      <div className="flex justify-between items-center">
+        <div className="text-sm">
+          {isLoadingRelease ? (
+            <span className="text-gray-400">読み込み中...</span>
+          ) : latest_release ? (
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-1 bg-green-100 text-green-800 rounded font-mono">
+                {latest_release.tag_name}
+              </span>
+              <span className="text-gray-500">
+                {latest_release.days_since_release === 0
+                  ? '今日'
+                  : `${latest_release.days_since_release}日前`}
+              </span>
+            </div>
+          ) : (
+            <span className="text-gray-400">リリースなし</span>
+          )}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => onCreateRelease(repository)}
+          className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors cursor-pointer"
+        >
+          新規リリース
+        </button>
+      </div>
+    </div>
+  );
+};

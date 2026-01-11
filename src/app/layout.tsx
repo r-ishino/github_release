@@ -1,19 +1,25 @@
-import type { Metadata } from "next";
-import "./globals.css";
+import type { Metadata } from 'next';
+import { Header } from '@/components/Header';
+import './globals.css';
 
 export const metadata: Metadata = {
-	title: "GitHub Release Manager",
-	description: "Easily create GitHub releases",
+  title: 'GitHub Release Manager',
+  description: 'Easily create GitHub releases',
 };
 
-export default function RootLayout({
-	children,
+const RootLayout = ({
+  children,
 }: Readonly<{
-	children: React.ReactNode;
-}>) {
-	return (
-		<html lang="ja">
-			<body className="antialiased">{children}</body>
-		</html>
-	);
-}
+  children: React.ReactNode;
+}>) => {
+  return (
+    <html lang="ja">
+      <body className="antialiased bg-gray-50 min-h-screen">
+        <Header />
+        <main>{children}</main>
+      </body>
+    </html>
+  );
+};
+
+export default RootLayout;

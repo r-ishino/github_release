@@ -1,4 +1,4 @@
-export interface GitHubRepository {
+export type GitHubRepository = {
   id: number;
   name: string;
   full_name: string;
@@ -9,9 +9,9 @@ export interface GitHubRepository {
   private: boolean;
   html_url: string;
   default_branch: string;
-}
+};
 
-export interface GitHubRelease {
+export type GitHubRelease = {
   id: number;
   tag_name: string;
   name: string | null;
@@ -21,9 +21,9 @@ export interface GitHubRelease {
   published_at: string | null;
   html_url: string;
   target_commitish: string;
-}
+};
 
-export interface RepositoryWithRelease {
+export type RepositoryBasic = {
   id: number;
   name: string;
   full_name: string;
@@ -32,14 +32,19 @@ export interface RepositoryWithRelease {
   private: boolean;
   html_url: string;
   default_branch: string;
-  latest_release: {
-    tag_name: string;
-    published_at: string;
-    days_since_release: number;
-  } | null;
-}
+};
 
-export interface ReleaseInfo {
+export type LatestReleaseInfo = {
+  tag_name: string;
+  published_at: string;
+  days_since_release: number;
+};
+
+export type RepositoryWithRelease = RepositoryBasic & {
+  latest_release: LatestReleaseInfo | null;
+};
+
+export type ReleaseInfo = {
   id: number;
   tag_name: string;
   name: string | null;
@@ -48,18 +53,19 @@ export interface ReleaseInfo {
   prerelease: boolean;
   published_at: string | null;
   html_url: string;
-}
+};
 
-export interface CreateReleaseRequest {
+export type CreateReleaseRequest = {
   tag_name: string;
   name?: string;
+  body?: string;
   target_commitish?: string;
   draft?: boolean;
   prerelease?: boolean;
   generate_notes?: boolean;
-}
+};
 
-export interface GeneratedNotes {
+export type GeneratedNotes = {
   name: string;
   body: string;
-}
+};

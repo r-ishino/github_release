@@ -8,14 +8,14 @@ import {
 } from '@/lib/github';
 import type { CreateReleaseRequest } from '@/types/github';
 
-interface RouteParams {
+type RouteParams = {
   params: Promise<{
     owner: string;
     repo: string;
   }>;
-}
+};
 
-export async function GET(_request: Request, { params }: RouteParams) {
+export const GET = async (_request: Request, { params }: RouteParams) => {
   try {
     const { owner, repo } = await params;
     const [releases, latestRelease] = await Promise.all([
@@ -47,37 +47,38 @@ export async function GET(_request: Request, { params }: RouteParams) {
     const message = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json({ error: message }, { status: 500 });
   }
-}
+};
 
-export async function POST(request: Request, { params }: RouteParams) {
+export const POST = async (request: Request, { params }: RouteParams) => {
   try {
     const { owner, repo } = await params;
-    const body = (await request.json()) as CreateReleaseRequest;
+    const reqBody = (await request.json()) as CreateReleaseRequest;
 
-    if (!body.tag_name) {
+    if (!reqBody.tag_name) {
       return NextResponse.json({ error: 'tag_name is required' }, { status: 400 });
     }
 
-    let releaseBody = '';
+    let releaseBody = reqBody.body || '';
 
-    if (body.generate_notes) {
+    // Only generate notes if body is not provided and generate_notes is true
+    if (!reqBody.body && reqBody.generate_notes) {
       const latestRelease = await getLatestRelease(owner, repo);
       const notes = await generateReleaseNotes(
         owner,
         repo,
-        body.tag_name,
-        body.target_commitish,
+        reqBody.tag_name,
+        reqBody.target_commitish,
         latestRelease?.tag_name
       );
       releaseBody = notes.body;
     }
 
-    const release = await createRelease(owner, repo, body.tag_name, {
-      name: body.name || body.tag_name,
+    const release = await createRelease(owner, repo, reqBody.tag_name, {
+      name: reqBody.name || reqBody.tag_name,
       body: releaseBody,
-      targetCommitish: body.target_commitish,
-      draft: body.draft,
-      prerelease: body.prerelease,
+      targetCommitish: reqBody.target_commitish,
+      draft: reqBody.draft,
+      prerelease: reqBody.prerelease,
     });
 
     return NextResponse.json({
@@ -91,4 +92,4 @@ export async function POST(request: Request, { params }: RouteParams) {
     const message = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json({ error: message }, { status: 500 });
   }
-}
+};
