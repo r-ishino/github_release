@@ -4,21 +4,24 @@ import { useEffect, useState, useRef } from 'react';
 import { RepositoryCard } from '@/components/RepositoryCard';
 import { CreateReleaseModal } from '@/components/CreateReleaseModal';
 import { useFavorites } from '@/hooks/useFavorites';
-import type { RepositoryBasic, RepositoryWithRelease, LatestReleaseInfo } from '@/types/github';
+import type { RepositoryBasic, RepositoryWithRelease, LatestReleaseInfo, DiffStatus } from '@/types/github';
 
 const ITEMS_PER_PAGE = 10;
 
 const Home = () => {
   const [repositories, setRepositories] = useState<RepositoryBasic[]>([]);
   const [releases, setReleases] = useState<Record<string, LatestReleaseInfo | null>>({});
+  const [diffStatuses, setDiffStatuses] = useState<Record<string, DiffStatus>>({});
   const [loading, setLoading] = useState(true);
   const [releasesLoading, setReleasesLoading] = useState(false);
+  const [diffLoading, setDiffLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedRepo, setSelectedRepo] = useState<RepositoryWithRelease | null>(null);
   const [nextVersion, setNextVersion] = useState('v0.0.1');
   const [refreshKey, setRefreshKey] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const fetchedPagesRef = useRef<Set<string>>(new Set());
+  const fetchedDiffPagesRef = useRef<Set<string>>(new Set());
 
   const { isFavorite, toggleFavorite, isLoaded } = useFavorites();
 
@@ -28,7 +31,9 @@ const Home = () => {
       try {
         setLoading(true);
         setReleases({});
+        setDiffStatuses({});
         fetchedPagesRef.current = new Set();
+        fetchedDiffPagesRef.current = new Set();
         const response = await fetch('/api/repositories');
         if (!response.ok) {
           throw new Error('リポジトリの取得に失敗しました');
@@ -101,6 +106,49 @@ const Home = () => {
     fetchReleases();
   }, [paginatedRepositories, releases]);
 
+  // Fetch diff status for repositories with releases
+  useEffect(() => {
+    const reposWithReleases = paginatedRepositories.filter(
+      (repo) => releases[repo.full_name]?.tag_name && !(repo.full_name in diffStatuses)
+    );
+
+    if (reposWithReleases.length === 0) return;
+
+    const cacheKey = reposWithReleases.map((r) => r.full_name).join(',');
+    if (fetchedDiffPagesRef.current.has(cacheKey)) return;
+    fetchedDiffPagesRef.current.add(cacheKey);
+
+    const fetchDiffStatuses = async () => {
+      setDiffLoading(true);
+      try {
+        const response = await fetch('/api/diff-status/batch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            repositories: reposWithReleases.map((repo) => ({
+              owner: repo.owner,
+              name: repo.name,
+              full_name: repo.full_name,
+              tag_name: releases[repo.full_name]?.tag_name,
+              default_branch: repo.default_branch,
+            })),
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setDiffStatuses((prev) => ({ ...prev, ...data }));
+        }
+      } catch {
+        // Ignore diff fetch errors
+      } finally {
+        setDiffLoading(false);
+      }
+    };
+
+    fetchDiffStatuses();
+  }, [paginatedRepositories, releases, diffStatuses]);
+
   const paginatedRepositoriesWithRelease: RepositoryWithRelease[] = paginatedRepositories.map(
     (repo) => ({
       ...repo,
@@ -166,6 +214,8 @@ const Home = () => {
             onToggleFavorite={toggleFavorite}
             onCreateRelease={handleCreateRelease}
             isLoadingRelease={releasesLoading && !(repo.full_name in releases)}
+            diffStatus={diffStatuses[repo.full_name]}
+            isLoadingDiff={diffLoading && !(repo.full_name in diffStatuses)}
           />
         ))}
       </div>

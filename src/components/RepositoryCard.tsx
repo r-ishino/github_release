@@ -1,6 +1,6 @@
 'use client';
 
-import type { RepositoryWithRelease } from '@/types/github';
+import type { RepositoryWithRelease, DiffStatus } from '@/types/github';
 
 type RepositoryCardProps = {
   repository: RepositoryWithRelease;
@@ -8,6 +8,8 @@ type RepositoryCardProps = {
   onToggleFavorite: (repoFullName: string) => void;
   onCreateRelease: (repository: RepositoryWithRelease) => void;
   isLoadingRelease?: boolean;
+  diffStatus?: DiffStatus;
+  isLoadingDiff?: boolean;
 };
 
 const ownerColors = [
@@ -38,6 +40,8 @@ export const RepositoryCard = ({
   onToggleFavorite,
   onCreateRelease,
   isLoadingRelease = false,
+  diffStatus,
+  isLoadingDiff = false,
 }: RepositoryCardProps) => {
   const { latest_release } = repository;
   const ownerColorClass = getOwnerColor(repository.owner);
@@ -84,7 +88,7 @@ export const RepositoryCard = ({
           {isLoadingRelease ? (
             <span className="text-gray-400">読み込み中...</span>
           ) : latest_release ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="px-2 py-1 bg-green-100 text-green-800 rounded font-mono">
                 {latest_release.tag_name}
               </span>
@@ -93,6 +97,17 @@ export const RepositoryCard = ({
                   ? '今日'
                   : `${latest_release.days_since_release}日前`}
               </span>
+              {isLoadingDiff ? (
+                <span className="text-gray-400 text-xs">差分確認中...</span>
+              ) : diffStatus?.hasChanges ? (
+                <span className="px-2 py-0.5 bg-orange-100 text-orange-700 rounded text-xs">
+                  {diffStatus.commitsAhead}件の新コミット
+                </span>
+              ) : diffStatus ? (
+                <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">
+                  最新
+                </span>
+              ) : null}
             </div>
           ) : (
             <span className="text-gray-400">リリースなし</span>

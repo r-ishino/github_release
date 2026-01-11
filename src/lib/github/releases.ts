@@ -2,6 +2,8 @@ import type {
   GitHubRelease,
   LatestReleaseInfo,
   GeneratedNotes,
+  GitHubCompareResponse,
+  DiffStatus,
 } from '@/types/github';
 import { fetchGitHub } from './client';
 
@@ -92,4 +94,27 @@ export const createRelease = async (
       prerelease: options?.prerelease || false,
     }),
   });
+};
+
+export const getDiffStatus = async (
+  owner: string,
+  repo: string,
+  tagName: string,
+  defaultBranch: string
+): Promise<DiffStatus> => {
+  try {
+    const compare = await fetchGitHub<GitHubCompareResponse>(
+      `/repos/${owner}/${repo}/compare/${encodeURIComponent(tagName)}...${encodeURIComponent(defaultBranch)}`
+    );
+
+    return {
+      hasChanges: compare.ahead_by > 0,
+      commitsAhead: compare.ahead_by,
+    };
+  } catch {
+    return {
+      hasChanges: false,
+      commitsAhead: 0,
+    };
+  }
 };

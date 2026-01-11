@@ -4,5 +4,6 @@ export {
   getReleases,
   generateReleaseNotes,
   createRelease,
+  getDiffStatus,
 } from './releases';
 export { calculateNextVersion } from './version';

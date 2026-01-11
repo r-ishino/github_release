@@ -98,7 +98,17 @@ export const CreateReleaseModal = ({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-lg max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
         <h2 className="text-xl font-bold mb-4">新規リリース作成</h2>
-        <p className="text-gray-600 mb-4">{repository.full_name}</p>
+        <div className="mb-4">
+          <p className="text-gray-600">{repository.full_name}</p>
+          <p className="text-sm text-gray-500">
+            現行バージョン:{' '}
+            {repository.latest_release ? (
+              <span className="font-mono text-gray-700">{repository.latest_release.tag_name}</span>
+            ) : (
+              <span className="text-gray-400">なし</span>
+            )}
+          </p>
+        </div>
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
