@@ -87,8 +87,8 @@ export const RepositoryCard = ({
         <div className="text-sm">
           {isLoadingRelease ? (
             <div className="flex items-center gap-2">
-              <div className="h-5 w-16 bg-gray-200 rounded animate-pulse" />
-              <div className="h-4 w-12 bg-gray-200 rounded animate-pulse" />
+              <div className="h-[22px] w-14 bg-gray-200 rounded animate-pulse" />
+              <div className="h-4 w-10 bg-gray-200 rounded animate-pulse" />
             </div>
           ) : latest_release ? (
             <div className="flex items-center gap-2 flex-wrap">
@@ -109,7 +109,7 @@ export const RepositoryCard = ({
         <div className="flex items-center gap-2">
           {latest_release && (
             isLoadingDiff ? (
-              <div className="h-5 w-8 bg-gray-200 rounded animate-pulse" />
+              <div className="h-[22px] w-8 bg-gray-200 rounded animate-pulse" />
             ) : diffStatus?.hasChanges ? (
               <span className="px-1.5 py-0.5 bg-red-100 text-red-600 rounded text-xs font-medium">
                 +{diffStatus.commitsAhead}
