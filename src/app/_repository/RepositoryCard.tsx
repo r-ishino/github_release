@@ -1,6 +1,6 @@
 'use client';
 
-import type { RepositoryWithRelease, DiffStatus } from '@/types/github';
+import type { RepositoryWithRelease, DiffStatus } from '../../types/github';
 
 type RepositoryCardProps = {
   repository: RepositoryWithRelease;

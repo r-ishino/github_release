@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { getDiffStatus } from '@/lib/github';
-import type { DiffStatus } from '@/types/github';
+import { getDiffStatus } from '../../../../lib/github';
+import type { DiffStatus } from '../../../../types/github';
 
 type BatchDiffStatusResponse = {
   [fullName: string]: DiffStatus;

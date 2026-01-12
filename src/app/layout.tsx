@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import { Header } from '@/components/Header';
+import { Header } from '../components/Header';
+import { QueryProvider } from '../providers';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -15,8 +16,10 @@ const RootLayout = ({
   return (
     <html lang="ja">
       <body className="antialiased bg-gray-50 min-h-screen">
-        <Header />
-        <main>{children}</main>
+        <QueryProvider>
+          <Header />
+          <main>{children}</main>
+        </QueryProvider>
       </body>
     </html>
   );

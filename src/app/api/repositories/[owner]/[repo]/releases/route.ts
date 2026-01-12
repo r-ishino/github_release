@@ -5,8 +5,8 @@ import {
   generateReleaseNotes,
   createRelease,
   calculateNextVersion,
-} from '@/lib/github';
-import type { CreateReleaseRequest } from '@/types/github';
+} from '../../../../../../lib/github';
+import type { CreateReleaseRequest } from '../../../../../../types/github';
 
 type RouteParams = {
   params: Promise<{

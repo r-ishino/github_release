@@ -4,7 +4,7 @@ import type {
   GeneratedNotes,
   GitHubCompareResponse,
   DiffStatus,
-} from '@/types/github';
+} from '../../types/github';
 import { fetchGitHub } from './client';
 
 export const getLatestRelease = async (
