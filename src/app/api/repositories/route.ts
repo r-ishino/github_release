@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getRepositoriesBasic } from '@/lib/github';
+import { getRepositoriesBasic } from '../../../lib/github';
 
 export const GET = async () => {
   try {

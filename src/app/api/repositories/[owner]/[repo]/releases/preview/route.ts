@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { generateReleaseNotes, getLatestRelease } from '@/lib/github';
+import { generateReleaseNotes, getLatestRelease } from '../../../../../../../lib/github';
 
 type RouteParams = {
   params: Promise<{

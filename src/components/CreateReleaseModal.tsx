@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import type { RepositoryWithRelease } from '@/types/github';
+import type { RepositoryWithRelease } from '../types/github';
 
 type CreateReleaseModalProps = {
   repository: RepositoryWithRelease;

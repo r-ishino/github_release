@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { getLatestRelease } from '@/lib/github';
-import type { LatestReleaseInfo } from '@/types/github';
+import { getLatestRelease } from '../../../../lib/github';
+import type { LatestReleaseInfo } from '../../../../types/github';
 
 type BatchReleaseResponse = {
   [fullName: string]: LatestReleaseInfo | null;

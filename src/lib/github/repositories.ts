@@ -2,7 +2,7 @@ import type {
   GitHubRepository,
   RepositoryBasic,
   RepositoryWithRelease,
-} from '@/types/github';
+} from '../../types/github';
 import { fetchGitHub } from './client';
 import { getLatestRelease } from './releases';
 
