@@ -108,7 +108,7 @@ export const RepositoryCard = ({
             isLoadingDiff ? (
               <span className="text-gray-300 text-xs">確認中...</span>
             ) : diffStatus?.hasChanges ? (
-              <span className="px-1.5 py-0.5 bg-amber-50 text-amber-600 rounded text-xs">
+              <span className="px-1.5 py-0.5 bg-red-100 text-red-600 rounded text-xs font-medium">
                 +{diffStatus.commitsAhead}
               </span>
             ) : diffStatus ? (
