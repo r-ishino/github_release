@@ -1,6 +1,6 @@
 'use client';
 
-import { RepositoryCardSkeleton } from '../../components/RepositoryCardSkeleton';
+import { RepositoryCardSkeleton } from './RepositoryCardSkeleton';
 
 export const LoadingSkeleton = () => {
   return (

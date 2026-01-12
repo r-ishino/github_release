@@ -1,6 +1,6 @@
 'use client';
 
-import { RepositoryCard } from '../../components/RepositoryCard';
+import { RepositoryCard } from './RepositoryCard';
 import type { RepositoryWithRelease, DiffStatus } from '../../types/github';
 
 type RepositoryGridProps = {

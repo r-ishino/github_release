@@ -9,8 +9,10 @@ import {
   LoadingSkeleton,
   EmptyState,
   RepositoryGrid,
-} from './_components';
-import { useRepositories, useReleases, useDiffStatus } from './_hooks';
+  useRepositories,
+  useReleases,
+  useDiffStatus,
+} from './_repository';
 import type { RepositoryWithRelease } from '../types/github';
 
 const ITEMS_PER_PAGE = 10;
@@ -18,19 +20,12 @@ const ITEMS_PER_PAGE = 10;
 const Home = () => {
   const [selectedRepo, setSelectedRepo] = useState<RepositoryWithRelease | null>(null);
   const [nextVersion, setNextVersion] = useState('v0.0.1');
-  const [refreshKey, setRefreshKey] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
 
   const { isFavorite, toggleFavorite, isLoaded } = useFavorites();
 
-  const {
-    repositories,
-    loading,
-    error,
-    fetchedPagesRef,
-    fetchedDiffPagesRef,
-  } = useRepositories(refreshKey);
+  const { repositories, loading, error, invalidate } = useRepositories();
 
   const filteredRepositories = searchQuery.trim()
     ? repositories.filter((repo) => {
@@ -61,13 +56,11 @@ const Home = () => {
 
   const { releases, loading: releasesLoading } = useReleases({
     repositories: paginatedRepositories,
-    fetchedPagesRef,
   });
 
   const { diffStatuses, loading: diffLoading } = useDiffStatus({
     repositories: paginatedRepositories,
     releases,
-    fetchedDiffPagesRef,
   });
 
   const paginatedRepositoriesWithRelease: RepositoryWithRelease[] = paginatedRepositories.map(
@@ -103,7 +96,7 @@ const Home = () => {
 
   const handleReleaseSuccess = () => {
     setSelectedRepo(null);
-    setRefreshKey((prev) => prev + 1);
+    invalidate();
   };
 
   if (loading) {
