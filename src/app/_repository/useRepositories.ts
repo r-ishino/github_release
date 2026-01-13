@@ -20,8 +20,6 @@ export const useRepositories = () => {
   });
 
   const invalidate = async () => {
-    // GitHub APIの反映を待つため、少し遅延してから再取得
-    await new Promise((resolve) => setTimeout(resolve, 2000));
     await queryClient.invalidateQueries({
       queryKey: ['releases'],
       refetchType: 'all',
