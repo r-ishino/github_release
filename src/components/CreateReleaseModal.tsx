@@ -163,7 +163,7 @@ export const CreateReleaseModal = ({
             </button>
             <button
               type="submit"
-              className="px-4 py-2 text-sm bg-gray-800 text-white rounded hover:bg-gray-700 disabled:opacity-50 cursor-pointer transition-colors"
+              className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 cursor-pointer transition-colors"
               disabled={isSubmitting || isLoadingNotes}
             >
               {isSubmitting ? '作成中...' : 'リリース作成'}
