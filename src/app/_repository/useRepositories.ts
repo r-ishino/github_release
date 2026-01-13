@@ -19,10 +19,9 @@ export const useRepositories = () => {
     queryFn: fetchRepositories,
   });
 
-  const invalidate = () => {
-    queryClient.invalidateQueries({ queryKey: ['repositories'] });
-    queryClient.invalidateQueries({ queryKey: ['releases'] });
-    queryClient.invalidateQueries({ queryKey: ['diffStatuses'] });
+  const invalidate = async () => {
+    await queryClient.refetchQueries({ queryKey: ['releases'] });
+    await queryClient.refetchQueries({ queryKey: ['diffStatuses'] });
   };
 
   return {
