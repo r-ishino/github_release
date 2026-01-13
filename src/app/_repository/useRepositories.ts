@@ -22,14 +22,8 @@ export const useRepositories = () => {
   const invalidate = async () => {
     // GitHub APIの反映を待つため、少し遅延してから再取得
     await new Promise((resolve) => setTimeout(resolve, 2000));
-    await queryClient.invalidateQueries({
-      queryKey: ['releases'],
-      refetchType: 'all',
-    });
-    await queryClient.invalidateQueries({
-      queryKey: ['diffStatuses'],
-      refetchType: 'all',
-    });
+    await queryClient.refetchQueries({ queryKey: ['releases'] });
+    await queryClient.refetchQueries({ queryKey: ['diffStatuses'] });
   };
 
   return {
