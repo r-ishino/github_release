@@ -1,19 +1,7 @@
 const GITHUB_API_BASE = 'https://api.github.com';
 
-const getHeaders = (): HeadersInit => {
-  const token = process.env.GITHUB_TOKEN;
-  if (!token) {
-    throw new Error('GITHUB_TOKEN is not set');
-  }
-
-  return {
-    Accept: 'application/vnd.github+json',
-    Authorization: `Bearer ${token}`,
-    'X-GitHub-Api-Version': '2022-11-28',
-  };
-};
-
 export const fetchGitHub = async <T>(
+  token: string,
   endpoint: string,
   options?: RequestInit,
 ): Promise<T> => {
@@ -21,7 +9,9 @@ export const fetchGitHub = async <T>(
   const response = await fetch(url, {
     ...options,
     headers: {
-      ...getHeaders(),
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${token}`,
+      'X-GitHub-Api-Version': '2022-11-28',
       ...options?.headers,
     },
   });

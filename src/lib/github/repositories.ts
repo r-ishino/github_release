@@ -6,8 +6,11 @@ import type {
 import { fetchGitHub } from './client';
 import { getLatestRelease } from './releases';
 
-export const getRepositoriesBasic = async (): Promise<RepositoryBasic[]> => {
+export const getRepositoriesBasic = async (
+  token: string,
+): Promise<RepositoryBasic[]> => {
   const repos = await fetchGitHub<GitHubRepository[]>(
+    token,
     '/user/repos?per_page=100&sort=updated',
   );
 
@@ -23,14 +26,21 @@ export const getRepositoriesBasic = async (): Promise<RepositoryBasic[]> => {
   }));
 };
 
-export const getRepositories = async (): Promise<RepositoryWithRelease[]> => {
+export const getRepositories = async (
+  token: string,
+): Promise<RepositoryWithRelease[]> => {
   const repos = await fetchGitHub<GitHubRepository[]>(
+    token,
     '/user/repos?per_page=100&sort=updated',
   );
 
   const reposWithRelease = await Promise.all(
     repos.map(async (repo) => {
-      const latestRelease = await getLatestRelease(repo.owner.login, repo.name);
+      const latestRelease = await getLatestRelease(
+        token,
+        repo.owner.login,
+        repo.name,
+      );
 
       return {
         id: repo.id,

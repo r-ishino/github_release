@@ -8,11 +8,13 @@ import type {
 import { fetchGitHub } from './client';
 
 export const getLatestRelease = async (
+  token: string,
   owner: string,
   repo: string,
 ): Promise<LatestReleaseInfo | null> => {
   try {
     const release = await fetchGitHub<GitHubRelease>(
+      token,
       `/repos/${owner}/${repo}/releases/latest`,
     );
 
@@ -35,15 +37,18 @@ export const getLatestRelease = async (
 };
 
 export const getReleases = async (
+  token: string,
   owner: string,
   repo: string,
 ): Promise<GitHubRelease[]> => {
   return fetchGitHub<GitHubRelease[]>(
+    token,
     `/repos/${owner}/${repo}/releases?per_page=20`,
   );
 };
 
 export const generateReleaseNotes = async (
+  token: string,
   owner: string,
   repo: string,
   tagName: string,
@@ -63,6 +68,7 @@ export const generateReleaseNotes = async (
   }
 
   return fetchGitHub<GeneratedNotes>(
+    token,
     `/repos/${owner}/${repo}/releases/generate-notes`,
     {
       method: 'POST',
@@ -75,6 +81,7 @@ export const generateReleaseNotes = async (
 };
 
 export const createRelease = async (
+  token: string,
   owner: string,
   repo: string,
   tagName: string,
@@ -86,7 +93,7 @@ export const createRelease = async (
     prerelease?: boolean;
   },
 ): Promise<GitHubRelease> => {
-  return fetchGitHub<GitHubRelease>(`/repos/${owner}/${repo}/releases`, {
+  return fetchGitHub<GitHubRelease>(token, `/repos/${owner}/${repo}/releases`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -103,6 +110,7 @@ export const createRelease = async (
 };
 
 export const getDiffStatus = async (
+  token: string,
   owner: string,
   repo: string,
   tagName: string,
@@ -110,6 +118,7 @@ export const getDiffStatus = async (
 ): Promise<DiffStatus> => {
   try {
     const compare = await fetchGitHub<GitHubCompareResponse>(
+      token,
       `/repos/${owner}/${repo}/compare/${encodeURIComponent(tagName)}...${encodeURIComponent(defaultBranch)}`,
     );
 

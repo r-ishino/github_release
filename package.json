@@ -10,10 +10,12 @@
     "lint:hooks": "! grep -rE 'useCallback|useMemo' ./src --include='*.tsx' --include='*.ts' || (echo 'Error: useCallback/useMemo are banned. Use React Compiler instead.' && exit 1)",
     "lint:function": "! grep -rE '^export function |^export default function |^async function |^function ' ./src --include='*.tsx' --include='*.ts' || (echo 'Error: Use arrow functions instead of function declarations.' && exit 1)",
     "format": "biome format --write ./src",
-    "check": "biome check ./src"
+    "check": "biome check ./src",
+    "test": "vitest run"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.107.1",
+    "jose": "^6.2.17",
     "next": "^16.4.6",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
@@ -25,6 +27,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "tailwindcss": "^4.3.5",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.0"
   }
 }

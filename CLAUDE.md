@@ -13,7 +13,10 @@ GitHubのReleaseを簡単に作成できるWebサービス
 - **最適化**: React Compiler
 
 ## 環境変数
-- `GITHUB_TOKEN`: GitHub Personal Access Token (backend専用)
+- `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET`: GitHub OAuth App の認証情報 (backend専用)
+- `SESSION_SECRET`: セッション cookie の暗号化鍵 (backend専用、32 文字以上)
+
+GitHub API はログインしたユーザーのトークンで呼ぶ。ブラウザは `localhost` ではなく `http://127.0.0.1:8880` で開く(OAuth App の callback がポート違いを許すのは 127.0.0.1 だけのため)。
 
 ## ディレクトリ構成
 ```

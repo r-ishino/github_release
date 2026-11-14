@@ -1,5 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { withGitHubToken } from '../../../../lib/auth';
 import { getDiffStatus } from '../../../../lib/github';
 import type { DiffStatus } from '../../../../types/github';
 
@@ -15,7 +16,7 @@ type RepositoryInput = {
   default_branch: string;
 };
 
-export const POST = async (request: NextRequest) => {
+export const POST = withGitHubToken(async (request: NextRequest, token) => {
   try {
     const { repositories } = (await request.json()) as {
       repositories: RepositoryInput[];
@@ -31,6 +32,7 @@ export const POST = async (request: NextRequest) => {
     const results = await Promise.all(
       repositories.map(async (repo) => {
         const diffStatus = await getDiffStatus(
+          token,
           repo.owner,
           repo.name,
           repo.tag_name,
@@ -50,4 +52,4 @@ export const POST = async (request: NextRequest) => {
     const message = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json({ error: message }, { status: 500 });
   }
-};
+});
