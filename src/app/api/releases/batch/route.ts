@@ -1,5 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { withGitHubToken } from '../../../../lib/auth';
 import { getLatestRelease } from '../../../../lib/github';
 import type { LatestReleaseInfo } from '../../../../types/github';
 
@@ -7,7 +8,7 @@ type BatchReleaseResponse = {
   [fullName: string]: LatestReleaseInfo | null;
 };
 
-export const POST = async (request: NextRequest) => {
+export const POST = withGitHubToken(async (request: NextRequest, token) => {
   try {
     const { repositories } = (await request.json()) as {
       repositories: { owner: string; name: string; full_name: string }[];
@@ -22,7 +23,7 @@ export const POST = async (request: NextRequest) => {
 
     const results = await Promise.all(
       repositories.map(async (repo) => {
-        const release = await getLatestRelease(repo.owner, repo.name);
+        const release = await getLatestRelease(token, repo.owner, repo.name);
         return { full_name: repo.full_name, release };
       }),
     );
@@ -37,4 +38,4 @@ export const POST = async (request: NextRequest) => {
     const message = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json({ error: message }, { status: 500 });
   }
-};
+});

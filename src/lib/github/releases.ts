@@ -6,14 +6,17 @@ import type {
   LatestReleaseInfo,
 } from '../../types/github';
 import { fetchGitHub } from './client';
+import { repoPath } from './repo-path';
 
 export const getLatestRelease = async (
+  token: string,
   owner: string,
   repo: string,
 ): Promise<LatestReleaseInfo | null> => {
   try {
     const release = await fetchGitHub<GitHubRelease>(
-      `/repos/${owner}/${repo}/releases/latest`,
+      token,
+      `${repoPath(owner, repo)}/releases/latest`,
     );
 
     const publishedAt = release.published_at;
@@ -35,15 +38,18 @@ export const getLatestRelease = async (
 };
 
 export const getReleases = async (
+  token: string,
   owner: string,
   repo: string,
 ): Promise<GitHubRelease[]> => {
   return fetchGitHub<GitHubRelease[]>(
-    `/repos/${owner}/${repo}/releases?per_page=20`,
+    token,
+    `${repoPath(owner, repo)}/releases?per_page=20`,
   );
 };
 
 export const generateReleaseNotes = async (
+  token: string,
   owner: string,
   repo: string,
   tagName: string,
@@ -63,7 +69,8 @@ export const generateReleaseNotes = async (
   }
 
   return fetchGitHub<GeneratedNotes>(
-    `/repos/${owner}/${repo}/releases/generate-notes`,
+    token,
+    `${repoPath(owner, repo)}/releases/generate-notes`,
     {
       method: 'POST',
       headers: {
@@ -75,6 +82,7 @@ export const generateReleaseNotes = async (
 };
 
 export const createRelease = async (
+  token: string,
   owner: string,
   repo: string,
   tagName: string,
@@ -86,23 +94,28 @@ export const createRelease = async (
     prerelease?: boolean;
   },
 ): Promise<GitHubRelease> => {
-  return fetchGitHub<GitHubRelease>(`/repos/${owner}/${repo}/releases`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
+  return fetchGitHub<GitHubRelease>(
+    token,
+    `${repoPath(owner, repo)}/releases`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        tag_name: tagName,
+        name: options?.name || tagName,
+        body: options?.body || '',
+        target_commitish: options?.targetCommitish,
+        draft: options?.draft || false,
+        prerelease: options?.prerelease || false,
+      }),
     },
-    body: JSON.stringify({
-      tag_name: tagName,
-      name: options?.name || tagName,
-      body: options?.body || '',
-      target_commitish: options?.targetCommitish,
-      draft: options?.draft || false,
-      prerelease: options?.prerelease || false,
-    }),
-  });
+  );
 };
 
 export const getDiffStatus = async (
+  token: string,
   owner: string,
   repo: string,
   tagName: string,
@@ -110,7 +123,8 @@ export const getDiffStatus = async (
 ): Promise<DiffStatus> => {
   try {
     const compare = await fetchGitHub<GitHubCompareResponse>(
-      `/repos/${owner}/${repo}/compare/${encodeURIComponent(tagName)}...${encodeURIComponent(defaultBranch)}`,
+      token,
+      `${repoPath(owner, repo)}/compare/${encodeURIComponent(tagName)}...${encodeURIComponent(defaultBranch)}`,
     );
 
     return {

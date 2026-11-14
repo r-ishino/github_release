@@ -1,11 +1,18 @@
 # API設計
 
 ## 概要
-GitHub Personal Access Tokenを使用してGitHub APIと通信するバックエンドAPI。
-トークンはサーバーサイドでのみ使用し、フロントエンドには露出させない。
+ログインしたユーザーの GitHub OAuth トークンを使用して GitHub API と通信するバックエンドAPI。
+トークンは暗号化した httpOnly cookie に保存し、サーバーサイドでのみ復号して使用する。フロントエンドには露出させない。
+未ログインのリクエストには 401、他オリジンからの GET 以外のリクエストには 403 を返す。
 
 ## 環境変数
-- `GITHUB_TOKEN`: GitHub Personal Access Token (必須スコープ: `repo`)
+- `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET`: GitHub OAuth App の認証情報(要求スコープ: `repo`)
+- `SESSION_SECRET`: セッション cookie の暗号化鍵(32 文字以上)
+
+## 認証エンドポイント
+- `GET /api/auth/login`: GitHub の許可画面へリダイレクトする
+- `GET /api/auth/callback`: 許可後の戻り先。トークンを取得してセッション cookie を発行する
+- `POST /api/auth/logout`: セッション cookie を削除する
 
 ---
 
