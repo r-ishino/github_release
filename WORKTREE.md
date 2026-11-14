@@ -50,11 +50,8 @@ pnpm exec next dev --port <port>
 
 ```bash
 lsof -ti:<port> | xargs kill
-rm -f AGENTS.md
 git worktree remove <worktree>
 ```
-
-AI エージェント(Claude Code 等)から `next dev` を起動すると、Next.js が未追跡の `AGENTS.md` を生成する。残っていると未コミットの差分として扱われ、`git worktree remove` が止まる。
 
 ## 分離されないもの
 
