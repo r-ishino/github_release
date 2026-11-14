@@ -10,8 +10,6 @@ import {
 } from '../../../../lib/auth';
 
 export const GET = (request: NextRequest) => {
-  // GitHub OAuth App がポート違いの callback を許すのは 127.0.0.1 だけで、
-  // localhost のまま進めると GitHub が redirect_uri 不一致で弾く。
   const origin = new URL(getRequestOrigin(request));
   if (origin.hostname === 'localhost') {
     origin.hostname = '127.0.0.1';

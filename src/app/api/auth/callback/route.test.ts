@@ -87,7 +87,7 @@ describe('GET /api/auth/callback', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('state が一致すれば、トークンを暗号化した cookie に入れてトップへ戻す', async () => {
+  it('state が一致すれば、トークンを暗号化した cookie に入れてトップへ戻し、使い終わった state cookie は消す', async () => {
     stubGitHub();
 
     const response = await GET(
@@ -105,18 +105,6 @@ describe('GET /api/auth/callback', () => {
     });
     expect(sessionCookie?.httpOnly).toBe(true);
     expect(sessionCookie?.sameSite).toBe('lax');
-  });
-
-  it('使い終わった state cookie を消し、同じ state で二度ログインさせない', async () => {
-    stubGitHub();
-
-    const response = await GET(
-      buildCallbackRequest({
-        query: 'code=abc&state=expected',
-        stateCookie: 'expected',
-      }),
-    );
-
     expect(response.cookies.get('oauth_state')?.maxAge).toBe(0);
   });
 

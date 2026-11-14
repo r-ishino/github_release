@@ -33,7 +33,8 @@ describe('セッション cookie', () => {
   it('書き換えた cookie はログインしていないものとして扱う', async () => {
     const cookie = await encryptSession(session);
     const parts = cookie.split('.');
-    const tamperedCiphertext = `${parts[3].slice(0, -2)}AA`;
+    const ciphertext = parts[3];
+    const tamperedCiphertext = `${ciphertext[0] === 'A' ? 'B' : 'A'}${ciphertext.slice(1)}`;
     const tampered = [...parts.slice(0, 3), tamperedCiphertext, parts[4]].join(
       '.',
     );

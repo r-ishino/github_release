@@ -3,7 +3,7 @@ export const LoginPrompt = () => {
     <div className="max-w-6xl mx-auto px-4 py-16 text-center">
       <p className="text-gray-600 mb-6">
         GitHub
-        アカウントでログインすると、あなたが参照できるリポジトリのリリースを作成できます。
+        アカウントでログインすると、書き込み権限のあるリポジトリのリリースを作成できます。
       </p>
       <a
         href="/api/auth/login"
