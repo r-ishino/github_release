@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getLatestRelease } from '../../../../lib/github';
 import type { LatestReleaseInfo } from '../../../../types/github';
 
@@ -16,7 +16,7 @@ export const POST = async (request: NextRequest) => {
     if (!repositories || !Array.isArray(repositories)) {
       return NextResponse.json(
         { error: 'repositories is required' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -24,7 +24,7 @@ export const POST = async (request: NextRequest) => {
       repositories.map(async (repo) => {
         const release = await getLatestRelease(repo.owner, repo.name);
         return { full_name: repo.full_name, release };
-      })
+      }),
     );
 
     const response: BatchReleaseResponse = {};

@@ -13,7 +13,10 @@ const getHeaders = (): HeadersInit => {
   };
 };
 
-export const fetchGitHub = async <T>(endpoint: string, options?: RequestInit): Promise<T> => {
+export const fetchGitHub = async <T>(
+  endpoint: string,
+  options?: RequestInit,
+): Promise<T> => {
   const url = `${GITHUB_API_BASE}${endpoint}`;
   const response = await fetch(url, {
     ...options,

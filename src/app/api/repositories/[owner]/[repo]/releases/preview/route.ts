@@ -1,6 +1,9 @@
-import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { generateReleaseNotes, getLatestRelease } from '../../../../../../../lib/github';
+import { NextResponse } from 'next/server';
+import {
+  generateReleaseNotes,
+  getLatestRelease,
+} from '../../../../../../../lib/github';
 
 type RouteParams = {
   params: Promise<{
@@ -26,7 +29,7 @@ export const GET = async (request: NextRequest, { params }: RouteParams) => {
       repo,
       tagName,
       targetCommitish,
-      latestRelease?.tag_name
+      latestRelease?.tag_name,
     );
 
     return NextResponse.json({

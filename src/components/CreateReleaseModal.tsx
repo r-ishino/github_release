@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { RepositoryWithRelease } from '../types/github';
 
 type CreateReleaseModalProps = {
@@ -38,7 +38,7 @@ export const CreateReleaseModal = ({
       setIsLoadingNotes(true);
       try {
         const response = await fetch(
-          `/api/repositories/${repository.owner}/${repository.name}/releases/preview?tag=${encodeURIComponent(tagName)}&target=${encodeURIComponent(repository.default_branch)}`
+          `/api/repositories/${repository.owner}/${repository.name}/releases/preview?tag=${encodeURIComponent(tagName)}&target=${encodeURIComponent(repository.default_branch)}`,
         );
         if (response.ok) {
           const data = await response.json();
@@ -76,7 +76,7 @@ export const CreateReleaseModal = ({
             target_commitish: repository.default_branch,
             body: releaseNotes,
           }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -97,13 +97,17 @@ export const CreateReleaseModal = ({
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-lg max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto shadow-lg">
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">新規リリース作成</h2>
+        <h2 className="text-lg font-semibold text-gray-800 mb-4">
+          新規リリース作成
+        </h2>
         <div className="mb-4">
           <p className="text-sm text-gray-600">{repository.full_name}</p>
           <p className="text-xs text-gray-500 mt-1">
             現行バージョン:{' '}
             {repository.latest_release ? (
-              <span className="font-mono text-gray-600">{repository.latest_release.tag_name}</span>
+              <span className="font-mono text-gray-600">
+                {repository.latest_release.tag_name}
+              </span>
             ) : (
               <span className="text-gray-400">なし</span>
             )}
@@ -112,7 +116,10 @@ export const CreateReleaseModal = ({
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="tagName" className="block text-xs font-medium text-gray-600 mb-1">
+            <label
+              htmlFor="tagName"
+              className="block text-xs font-medium text-gray-600 mb-1"
+            >
               タグ名（バージョン）
             </label>
             <input
@@ -127,10 +134,15 @@ export const CreateReleaseModal = ({
           </div>
 
           <div className="mb-4">
-            <label htmlFor="releaseNotes" className="block text-xs font-medium text-gray-600 mb-1">
+            <label
+              htmlFor="releaseNotes"
+              className="block text-xs font-medium text-gray-600 mb-1"
+            >
               リリースノート
               {isLoadingNotes && (
-                <span className="ml-2 text-gray-400 font-normal">読み込み中...</span>
+                <span className="ml-2 text-gray-400 font-normal">
+                  読み込み中...
+                </span>
               )}
             </label>
             <textarea

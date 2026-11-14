@@ -1,9 +1,9 @@
-export { getRepositoriesBasic, getRepositories } from './repositories';
 export {
+  createRelease,
+  generateReleaseNotes,
+  getDiffStatus,
   getLatestRelease,
   getReleases,
-  generateReleaseNotes,
-  createRelease,
-  getDiffStatus,
 } from './releases';
+export { getRepositories, getRepositoriesBasic } from './repositories';
 export { calculateNextVersion } from './version';

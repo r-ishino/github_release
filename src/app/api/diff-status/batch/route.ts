@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getDiffStatus } from '../../../../lib/github';
 import type { DiffStatus } from '../../../../types/github';
 
@@ -24,7 +24,7 @@ export const POST = async (request: NextRequest) => {
     if (!repositories || !Array.isArray(repositories)) {
       return NextResponse.json(
         { error: 'repositories is required' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -34,10 +34,10 @@ export const POST = async (request: NextRequest) => {
           repo.owner,
           repo.name,
           repo.tag_name,
-          repo.default_branch
+          repo.default_branch,
         );
         return { full_name: repo.full_name, diffStatus };
-      })
+      }),
     );
 
     const response: BatchDiffStatusResponse = {};

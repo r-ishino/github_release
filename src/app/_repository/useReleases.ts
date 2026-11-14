@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import type { RepositoryBasic, LatestReleaseInfo } from '../../types/github';
+import type { LatestReleaseInfo, RepositoryBasic } from '../../types/github';
 
 type UseReleasesProps = {
   repositories: RepositoryBasic[];
@@ -10,7 +10,7 @@ type UseReleasesProps = {
 type ReleasesResponse = Record<string, LatestReleaseInfo | null>;
 
 const fetchReleases = async (
-  repositories: RepositoryBasic[]
+  repositories: RepositoryBasic[],
 ): Promise<ReleasesResponse> => {
   if (repositories.length === 0) return {};
 
@@ -34,7 +34,10 @@ const fetchReleases = async (
 };
 
 export const useReleases = ({ repositories }: UseReleasesProps) => {
-  const repoKeys = repositories.map((r) => r.full_name).sort().join(',');
+  const repoKeys = repositories
+    .map((r) => r.full_name)
+    .sort()
+    .join(',');
 
   const { data, isLoading } = useQuery({
     queryKey: ['releases', repoKeys],

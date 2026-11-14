@@ -1,6 +1,6 @@
 'use client';
 
-import type { RepositoryWithRelease, DiffStatus } from '../../types/github';
+import type { DiffStatus, RepositoryWithRelease } from '../../types/github';
 
 type RepositoryCardProps = {
   repository: RepositoryWithRelease;
@@ -51,7 +51,9 @@ export const RepositoryCard = ({
       <div className="flex justify-between items-start mb-2">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className={`px-2 py-0.5 text-xs font-medium rounded ${ownerColorClass}`}>
+            <span
+              className={`px-2 py-0.5 text-xs font-medium rounded ${ownerColorClass}`}
+            >
               {repository.owner}
             </span>
             {repository.private && (
@@ -107,8 +109,8 @@ export const RepositoryCard = ({
         </div>
 
         <div className="flex items-center gap-2">
-          {latest_release && (
-            isLoadingDiff ? (
+          {latest_release &&
+            (isLoadingDiff ? (
               <div className="h-[22px] w-8 bg-gray-200 rounded animate-pulse" />
             ) : diffStatus?.hasChanges ? (
               <span className="px-1.5 py-0.5 bg-red-100 text-red-600 rounded text-xs font-medium">
@@ -116,8 +118,7 @@ export const RepositoryCard = ({
               </span>
             ) : diffStatus ? (
               <span className="text-gray-400 text-xs">✓</span>
-            ) : null
-          )}
+            ) : null)}
           <button
             type="button"
             onClick={() => onCreateRelease(repository)}
