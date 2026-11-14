@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import {
-  getReleases,
-  getLatestRelease,
-  generateReleaseNotes,
-  createRelease,
   calculateNextVersion,
+  createRelease,
+  generateReleaseNotes,
+  getLatestRelease,
+  getReleases,
 } from '../../../../../../lib/github';
 import type { CreateReleaseRequest } from '../../../../../../types/github';
 
@@ -55,7 +55,10 @@ export const POST = async (request: Request, { params }: RouteParams) => {
     const reqBody = (await request.json()) as CreateReleaseRequest;
 
     if (!reqBody.tag_name) {
-      return NextResponse.json({ error: 'tag_name is required' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'tag_name is required' },
+        { status: 400 },
+      );
     }
 
     let releaseBody = reqBody.body || '';
@@ -68,7 +71,7 @@ export const POST = async (request: Request, { params }: RouteParams) => {
         repo,
         reqBody.tag_name,
         reqBody.target_commitish,
-        latestRelease?.tag_name
+        latestRelease?.tag_name,
       );
       releaseBody = notes.body;
     }

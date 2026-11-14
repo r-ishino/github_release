@@ -3,22 +3,23 @@
 import { useState } from 'react';
 import { CreateReleaseModal } from '../components/CreateReleaseModal';
 import { useFavorites } from '../hooks/useFavorites';
-import {
-  SearchHeader,
-  Pagination,
-  LoadingSkeleton,
-  EmptyState,
-  RepositoryGrid,
-  useRepositories,
-  useReleases,
-  useDiffStatus,
-} from './_repository';
 import type { RepositoryWithRelease } from '../types/github';
+import {
+  EmptyState,
+  LoadingSkeleton,
+  Pagination,
+  RepositoryGrid,
+  SearchHeader,
+  useDiffStatus,
+  useReleases,
+  useRepositories,
+} from './_repository';
 
 const ITEMS_PER_PAGE = 10;
 
 const Home = () => {
-  const [selectedRepo, setSelectedRepo] = useState<RepositoryWithRelease | null>(null);
+  const [selectedRepo, setSelectedRepo] =
+    useState<RepositoryWithRelease | null>(null);
   const [nextVersion, setNextVersion] = useState('v0.0.1');
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
@@ -51,7 +52,7 @@ const Home = () => {
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedRepositories = sortedRepositories.slice(
     startIndex,
-    startIndex + ITEMS_PER_PAGE
+    startIndex + ITEMS_PER_PAGE,
   );
 
   const { releases, loading: releasesLoading } = useReleases({
@@ -63,12 +64,11 @@ const Home = () => {
     releases,
   });
 
-  const paginatedRepositoriesWithRelease: RepositoryWithRelease[] = paginatedRepositories.map(
-    (repo) => ({
+  const paginatedRepositoriesWithRelease: RepositoryWithRelease[] =
+    paginatedRepositories.map((repo) => ({
       ...repo,
       latest_release: releases[repo.full_name] ?? null,
-    })
-  );
+    }));
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -78,7 +78,7 @@ const Home = () => {
   const handleCreateRelease = async (repository: RepositoryWithRelease) => {
     try {
       const response = await fetch(
-        `/api/repositories/${repository.owner}/${repository.name}/releases`
+        `/api/repositories/${repository.owner}/${repository.name}/releases`,
       );
       if (response.ok) {
         const data = await response.json();
@@ -106,7 +106,9 @@ const Home = () => {
   if (error) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="p-4 bg-red-50 text-red-600 rounded text-sm">{error}</div>
+        <div className="p-4 bg-red-50 text-red-600 rounded text-sm">
+          {error}
+        </div>
       </div>
     );
   }

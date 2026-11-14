@@ -8,7 +8,7 @@ import { getLatestRelease } from './releases';
 
 export const getRepositoriesBasic = async (): Promise<RepositoryBasic[]> => {
   const repos = await fetchGitHub<GitHubRepository[]>(
-    '/user/repos?per_page=100&sort=updated'
+    '/user/repos?per_page=100&sort=updated',
   );
 
   return repos.map((repo) => ({
@@ -25,7 +25,7 @@ export const getRepositoriesBasic = async (): Promise<RepositoryBasic[]> => {
 
 export const getRepositories = async (): Promise<RepositoryWithRelease[]> => {
   const repos = await fetchGitHub<GitHubRepository[]>(
-    '/user/repos?per_page=100&sort=updated'
+    '/user/repos?per_page=100&sort=updated',
   );
 
   const reposWithRelease = await Promise.all(
@@ -43,7 +43,7 @@ export const getRepositories = async (): Promise<RepositoryWithRelease[]> => {
         default_branch: repo.default_branch,
         latest_release: latestRelease,
       };
-    })
+    }),
   );
 
   return reposWithRelease;

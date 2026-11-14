@@ -1,7 +1,11 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import type { RepositoryBasic, LatestReleaseInfo, DiffStatus } from '../../types/github';
+import type {
+  DiffStatus,
+  LatestReleaseInfo,
+  RepositoryBasic,
+} from '../../types/github';
 
 type UseDiffStatusProps = {
   repositories: RepositoryBasic[];
@@ -12,10 +16,10 @@ type DiffStatusResponse = Record<string, DiffStatus>;
 
 const fetchDiffStatuses = async (
   repositories: RepositoryBasic[],
-  releases: Record<string, LatestReleaseInfo | null>
+  releases: Record<string, LatestReleaseInfo | null>,
 ): Promise<DiffStatusResponse> => {
   const reposWithReleases = repositories.filter(
-    (repo) => releases[repo.full_name]?.tag_name
+    (repo) => releases[repo.full_name]?.tag_name,
   );
 
   if (reposWithReleases.length === 0) return {};
@@ -41,11 +45,17 @@ const fetchDiffStatuses = async (
   return response.json();
 };
 
-export const useDiffStatus = ({ repositories, releases }: UseDiffStatusProps) => {
+export const useDiffStatus = ({
+  repositories,
+  releases,
+}: UseDiffStatusProps) => {
   const reposWithReleases = repositories.filter(
-    (repo) => releases[repo.full_name]?.tag_name
+    (repo) => releases[repo.full_name]?.tag_name,
   );
-  const repoKeys = reposWithReleases.map((r) => r.full_name).sort().join(',');
+  const repoKeys = reposWithReleases
+    .map((r) => r.full_name)
+    .sort()
+    .join(',');
 
   const { data, isLoading } = useQuery({
     queryKey: ['diffStatuses', repoKeys],
