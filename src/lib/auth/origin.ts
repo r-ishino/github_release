@@ -12,3 +12,11 @@ export const getRequestOrigin = (request: NextRequest): string => {
 
 export const isSameOrigin = (request: NextRequest): boolean =>
   request.headers.get('origin') === getRequestOrigin(request);
+
+// GET には Origin が付かないことがあるので、ブラウザが付ける Sec-Fetch-Site で
+// 他サイトからの遷移を見分ける。付けないクライアント(curl など)は cookie を
+// 自分で持っている本人なので通す。
+export const isSameOriginByFetchMetadata = (request: NextRequest): boolean => {
+  const site = request.headers.get('sec-fetch-site');
+  return site === null || site === 'same-origin';
+};

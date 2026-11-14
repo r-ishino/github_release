@@ -9,15 +9,20 @@ const URL_ = `${ORIGIN}/api/repositories`;
 const buildRequest = async ({
   method = 'GET',
   origin,
+  secFetchSite,
   loggedIn = true,
 }: {
   method?: string;
   origin?: string;
+  secFetchSite?: string;
   loggedIn?: boolean;
 }) => {
   const headers = new Headers({ host: '127.0.0.1:8880' });
   if (origin) {
     headers.set('origin', origin);
+  }
+  if (secFetchSite) {
+    headers.set('sec-fetch-site', secFetchSite);
   }
   if (loggedIn) {
     const cookie = await encryptSession({
@@ -78,6 +83,25 @@ describe('withGitHubToken', () => {
   it('同じサイトから送られた POST は処理する', async () => {
     const response = await route(
       await buildRequest({ method: 'POST', origin: ORIGIN }),
+      {},
+    );
+
+    expect(response.status).toBe(200);
+  });
+
+  it('他のサイトからの遷移や読み込みで届いた GET は、ログインしていても 403 で拒否する', async () => {
+    const response = await route(
+      await buildRequest({ secFetchSite: 'cross-site' }),
+      {},
+    );
+
+    expect(response.status).toBe(403);
+    expect(handler).not.toHaveBeenCalled();
+  });
+
+  it('同じサイトの画面から呼ばれた GET は処理する', async () => {
+    const response = await route(
+      await buildRequest({ secFetchSite: 'same-origin' }),
       {},
     );
 
